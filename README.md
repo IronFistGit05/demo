@@ -196,7 +196,7 @@ hdfs dfs -put file2.txt /user/cloudera/union_input/
 ```
 
 #### Union Implementation
-```java
+```java        
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
