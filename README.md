@@ -230,6 +230,81 @@ print("Predicted class:", pred.argmax())
 ```
 
 ---
+Image Classifying Code:
+```python
+#Import Libraries
+import tensorflow as tf
+from tensorflow.keras.datasets import cifar10
+from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten, Conv2D, MaxPooling2D
+from tensorflow.keras.utils import to_categorical
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow.keras.preprocessing.image as image
+from google.colab import files
+
+#Load CIFAR-10 dataset
+(x_train, y_train), (x_test, y_test) = cifar10.load_data()
+
+#Normalize(0-1 scalae)
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
+#One-hot encode labels
+y_train = to_categorical(y_train, 10)
+y_test = to_categorical(y_test, 10)
+
+#CIFAR-10 class labels
+class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+
+#Define CNN Model
+model = Sequential([
+    Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)),
+    MaxPooling2D((2, 2)),
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D((2, 2)),
+    Conv2D(128, (3, 3), activation='relu'),
+    MaxPooling2D((2, 2)),
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dropout(0.5),
+    Dense(10, activation='softmax')
+])
+
+#Compile Model
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+#Train the model
+history = model.fit(x_train, y_train, epochs=10, batch_size=64, validation_split=0.2,verbose=1)
+
+#Evaluate the model
+test_loss, test_acc = model.evaluate(x_test, y_test,verbose=2)
+print('\nTest accuracy: {:.2f}%'.format(test_acc * 100))
+
+#Save Model
+model.save('cnn_cifar10.h5')
+print("Model saved as cnn_cifar10.h5")
+
+#Load saved model
+model = load_model("cnn_cifar10.h5")
+
+#Upload and Predict
+uploaded = files.upload()
+for filename in uploaded.keys():
+  img = image.load_img(filename, target_size=(32, 32))
+  img_array = image.img_to_array(img)
+  img_array = np.expand_dims(img_array, axis=0)
+  img_array = img_array / 255.0
+
+  #Predict class
+  prediction = model.predict(img_array)
+  predicted_class = class_names[np.argmax(prediction)]
+
+  #Show image + prediction
+  plt.imshow(image.load_img(filename))
+  plt.title(f"Prediction: {predicted_class}")
+  plt.axis('off')
+  plt.show()
+```
 
 ## Practical 7 — Recurrent Neural Network (RNN)
 
