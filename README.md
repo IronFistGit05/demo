@@ -529,6 +529,82 @@ predict_sentiment(test_sentences)
   - Add inline outputs, visualizations, or a more polished GitHub README layout with badges and TOC.
 <img width="360" height="689" alt="image" src="https://github.com/user-attachments/assets/446fa5e7-84b7-487e-8b8e-3ff6a6b80514" />
 
+VIVA Questions
+Practical 1 – TensorFlow/Keras Basics
+ Q: What is TensorFlow?
+ A: TensorFlow is an open-source deep learning framework used to build and train neural networks.
+ Q: What is Keras?
+ A: A simple high-level API inside TensorFlow for building neural networks easily.
+ Q: Why import libraries?
+ A: To use prebuilt functions and modules instead of writing everything from scratch.
+ Q: What is MNIST?
+ A: A dataset of handwritten digit images widely used for image classification tasks.
+ 
+ Practical 2 – Loading and Splitting Dataset
+ Q: Why split data?
+ A: To train the model on one set and test its performance on another.
+ Q: Difference between training and testing data?
+ A: Training teaches the model; testing checks accuracy on unseen data.
+ Q: Which function is used to split data?
+ A: train_test_split() from Scikit-Learn.
+ 
+ Practical 3 – Data Preprocessing
+ Q: Why normalize?
+ A: To scale data for faster and stable training.
+ Q: What is Flattening?
+ A: Converting 2D image matrices into 1D vectors.
+ Q: What is One-hot encoding?
+ A: Turning labels into vector format to be understood by neural networks.
+ Q: Why reshape images?
+ A: CNN models require images to have channel dimensions.
+ 
+ Practical 4 – ANN
+ Q: What is a McCulloch-Pitts neuron?
+ A: A basic binary neuron model taking weighted inputs and a threshold.
+ Q: What is ANDNOT?
+A: A logic function that outputs 1 only when x1=1 and x2=0.
+ Q: Why XOR needs multiple layers?
+ A: XOR is not linearly separable and needs a hidden layer.
+ Q: Which algorithm trains XOR networks?
+ A: Backpropagation.
+ 
+ Practical 5 – Regularization Techniques
+ Q: What is regularization?
+ A: Techniques used to reduce overfitting.
+ Q: What is Dropout?
+ A: Randomly turning off neurons during training.
+ Q: What is Early Stopping?
+ A: Stopping training when validation loss stops improving.
+ Q: What is Data Augmentation?
+ A: Creating modified versions of images to expand the dataset.
+ 
+ Practical 6 – CNN
+ Q: Why use CNNs?
+ A: They extract important spatial features from images.
+ Q: What is Convolution?
+ A: Applying small filters to detect patterns in images.
+ Q: What is Max Pooling?
+ A: Reducing image size to keep only important features.
+ Q: Example dataset?
+ A: CIFAR-10.
+ 
+ Practical 7 – RNN
+ Q: What is RNN?
+ A: A neural network that processes sequence or time-based data.
+ Q: Why useful for character recognition?
+ A: RNNs remember previous steps and use context.
+ Q: Drawback of RNN?
+A: They suffer from vanishing gradients.
+
+ Practical 8 – LSTM
+ Q: What is LSTM?
+ A: A type of RNN that handles long-term dependencies using gates.
+ Q: Why used in sentiment analysis?
+ A: It understands context such as negations like 'not good'.
+ Q: Name LSTM gates.
+ A: Forget gate, Input gate, Output gate.
+ Q: What input does an LSTM take?
+ A: Tokenized sequences of text
 ---
 
 **Download updated README with code:**  
