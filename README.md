@@ -313,6 +313,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
   - Insert the actual exact code copied *verbatim* from your uploaded PDF pages into this README (I used representative, runnable code here).  
   - Create separate `.py` files for each practical in a zip/repository structure.
   - Add inline outputs, visualizations, or a more polished GitHub README layout with badges and TOC.
+<img width="360" height="689" alt="image" src="https://github.com/user-attachments/assets/446fa5e7-84b7-487e-8b8e-3ff6a6b80514" />
 
 ---
 
