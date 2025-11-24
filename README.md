@@ -377,7 +377,146 @@ model = Sequential([
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 # model.fit(X, y, epochs=10, batch_size=8)
 ```
+Code for Manual
+```python
+#Pratical 8
+# Step 1: Import Libraries
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Embedding, LSTM, Dense, Dropout
+from tensorflow.keras.utils import to_categorical
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from tensorflow.keras.callbacks import EarlyStopping
+import tensorflow as tf
 
+print("TensorFlow version:", tf.__version__)
+
+# Step 2: Load Dataset
+# Option A: Built-in sample dataset
+sample_data = {
+    "text": [
+        "I love this movie, it’s amazing!",
+        "This is the worst product I have ever used.",
+        "It was okay, nothing special.",
+        "The experience was fantastic!",
+        "Not bad, but could be better.",
+        "Absolutely terrible service.",
+        "I’m really happy with the results!",
+        "Mediocre performance, not impressive.",
+        "The food was delicious and the staff were friendly.",
+        "I didn’t like the quality at all."
+    ],
+    "sentiment": [
+        "Positive", "Negative", "Neutral", "Positive", "Neutral",
+        "Negative", "Positive", "Neutral", "Positive", "Negative"
+    ]
+}
+
+df = pd.DataFrame(sample_data)
+print("✅ Sample dataset loaded successfully!")
+
+# Step 3: Optional – Upload your own CSV file
+# Uncomment below to use your own file (make sure it has 'text' and 'sentiment' columns)
+#from google.colab import files
+#uploaded = files.upload()
+#df = pd.read_csv(list(uploaded.keys())[0])
+#print("✅ Custom dataset loaded successfully!")
+
+# Step 4: Encode sentiment labels (e.g., Negative=0, Neutral=1, Positive=2)
+label_encoder = LabelEncoder()
+df['label'] = label_encoder.fit_transform(df['sentiment'])
+num_classes = len(label_encoder.classes_)
+print("\nLabel mapping:", dict(zip(label_encoder.classes_, range(num_classes))))
+
+# Step 5: Text preprocessing
+max_words = 5000   # max number of words to keep
+max_len = 100      # max length of each sequence
+
+tokenizer = Tokenizer(num_words=max_words, oov_token="<OOV>")
+tokenizer.fit_on_texts(df['text'])
+X = tokenizer.texts_to_sequences(df['text'])
+X = pad_sequences(X, maxlen=max_len, padding='post', truncating='post')
+
+y = to_categorical(df['label'], num_classes=num_classes)
+
+# Step 6: Split into training and testing sets
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Step 7: Build LSTM Model
+model = Sequential([
+    Embedding(max_words, 128, input_length=max_len),
+    LSTM(128, dropout=0.2, recurrent_dropout=0.2),
+    Dense(64, activation='relu'),
+    Dropout(0.3),
+    Dense(num_classes, activation='softmax')
+])
+
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.summary()
+
+# Step 8: Train Model
+early_stop = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
+
+history = model.fit(
+    X_train, y_train,
+    validation_split=0.2,
+    epochs=10,
+    batch_size=32,
+    callbacks=[early_stop],
+    verbose=1
+)
+
+# Step 9: Evaluate Model
+loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
+print(f"\n🧾 Test Loss: {loss:.4f}")
+print(f"✅ Test Accuracy: {accuracy:.4f}")
+
+# Step 10: Plot Training History
+plt.figure(figsize=(12,5))
+
+plt.subplot(1,2,1)
+plt.plot(history.history['accuracy'], label='Train Accuracy')
+plt.plot(history.history['val_accuracy'], label='Val Accuracy')
+plt.title('Model Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+
+plt.subplot(1,2,2)
+plt.plot(history.history['loss'], label='Train Loss')
+plt.plot(history.history['val_loss'], label='Val Loss')
+plt.title('Model Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+
+plt.show()
+
+# Step 11: Predict Sentiment for New Text
+def predict_sentiment(texts):
+    seq = tokenizer.texts_to_sequences(texts)
+    padded = pad_sequences(seq, maxlen=max_len, padding='post')
+    preds = model.predict(padded)
+    pred_classes = np.argmax(preds, axis=1)
+    results = label_encoder.inverse_transform(pred_classes)
+    for t, r in zip(texts, results):
+        print(f"Text: {t}\nPredicted Sentiment: {r}\n")
+
+# Example predictions
+test_sentences = [
+    "I love this movie, it’s amazing",
+    "It was an average experience, nothing special.",
+    "The product was disappointing and bad.I didn’t like the quality at all"
+]
+predict_sentiment(test_sentences)
+
+```
 ---
 
 ## Notes & Next Steps
