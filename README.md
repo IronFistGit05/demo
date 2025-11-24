@@ -1,632 +1,320 @@
-# Big Data Practical Commands — Complete Extract (Markdown Version)
+# Deep Learning Lab — Practical Explanations + Code
 
-## PRACTICAL 1 — HDFS COMMANDS
+This README contains simple explanations and **the code** for each practical from your Deep Learning Lab Journal.  
+(Contents and lab structure referenced from the uploaded journal.) fileciteturn0file0
 
-### Command Descriptions
+---
 
-| Command | Description |
-|---------|-------------|
-| `hdfs dfs -mkdir` | Create a new directory in HDFS |
-| `hdfs dfs -touchz` | Create an empty file in HDFS |
-| `hdfs dfs -appendToFile` | Append content from stdin to a file in HDFS |
-| `hdfs dfs -put` | Upload a file from local filesystem to HDFS |
-| `hdfs dfs -copyFromLocal` | Copy a file from local filesystem to HDFS |
-| `hdfs dfs -get` | Download a file from HDFS to local filesystem |
-| `hdfs dfs -copyToLocal` | Copy a file from HDFS to local filesystem |
-| `hdfs dfs -moveFromLocal` | Move a file from local filesystem to HDFS (removes local copy) |
-| `hdfs dfs -cp` | Copy a file within HDFS from one location to another |
-| `hdfs dfs -mv` | Move/rename a file within HDFS |
-| `hdfs dfs -rm` | Delete a file from HDFS |
-| `hdfs dfs -rm -r` | Recursively delete a directory and its contents from HDFS |
-| `hdfs dfs -du` | Display disk usage of files in a directory |
-| `hdfs dfs -dus` | Display summary of disk usage for a directory |
-| `hdfs dfs -stat` | Display file statistics (size, modification time, etc.) |
+## Practical 1 — Introduction to TensorFlow / Keras
 
-### Commands
-```bash
-hdfs dfs -mkdir /user/cloudera/data
-hdfs dfs -touchz /user/cloudera/data/file1.txt
-echo "this is my content" | hdfs dfs -appendToFile - /user/cloudera/data/file1.txt
-hdfs dfs -put localfile.txt /user/cloudera/
-hdfs dfs -copyFromLocal localfile.txt /user/cloudera/
-hdfs dfs -get /user/cloudera/file1.txt ./
-hdfs dfs -copyToLocal /user/cloudera/file1.txt ./
-hdfs dfs -moveFromLocal localfile.txt /user/cloudera/
-hdfs dfs -cp /user/cloudera/file1.txt /user/hadoop/
-hdfs dfs -mv /user/cloudera/file1.txt /user/hadoop/
-hdfs dfs -rm /user/cloudera/file1.txt
-hdfs dfs -rm -r /user/cloudera/data/
-hdfs dfs -du /user/cloudera/
-hdfs dfs -dus /user/cloudera/
-hdfs dfs -stat /user/cloudera/file1.txt
+**Explanation:** Import TensorFlow/Keras and check versions; load a sample dataset (MNIST).
+
+**Code (Python):**
+```python
+# practical_1_imports.py
+import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Flatten
+
+print("TensorFlow Version:", tf.__version__)
+
+# load sample dataset (MNIST)
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+print("MNIST Dataset Loaded!")
+print("Training Data Shape:", x_train.shape)
+print("Testing Data Shape:", x_test.shape)
 ```
 
-### Execution Commands
+---
 
-#### Command Descriptions
+## Practical 2 — Loading & Splitting Dataset
 
-| Command | Description |
-|---------|-------------|
-| `hdfs dfs -mkdir /user/cloudera/User` | Create a User directory in HDFS |
-| `hdfs dfs -touchz /user/cloudera/User/file1.txt` | Create an empty file in the User directory |
-| `echo "User Name value"` \| `hdfs dfs -appendToFile - /user/cloudera/User/file1.txt` | Append user name value to file1.txt |
-| `hdfs dfs -copyFromLocal file2 /user/cloudera/User` | Copy file2 from local to User directory in HDFS |
-| `hdfs dfs -copyToLocal /user/cloudera/User/file1.txt ./` | Copy file1.txt from HDFS to local directory |
-| `hdfs dfs -moveFromLocal file3 /user/cloudera/User` | Move file3 from local to User directory (removes local copy) |
-| `hdfs dfs -cp /user/cloudera/User/file1.txt /user/cloudera/joey` | Copy file1.txt to joey directory in HDFS |
-| `hdfs dfs -mkdir /user/cloudera/union_input` | Create union_input directory for union operations |
-| `hdfs dfs -put file1.txt /user/cloudera/union_input/` | Upload file1.txt to union_input directory |
-| `hdfs dfs -put file2.txt /user/cloudera/union_input/` | Upload file2.txt to union_input directory |
+**Explanation:** Keras often gives built-in train/test splits; otherwise use `train_test_split`.
 
-#### Commands
-```bash
-hdfs dfs -mkdir /user/cloudera/User
-hdfs dfs -touchz /user/cloudera/User/file1.txt
-echo "User Name value" | hdfs dfs -appendToFile - /user/cloudera/User/file1.txt
-hdfs dfs -copyFromLocal file2 /user/cloudera/User
-hdfs dfs -copyToLocal /user/cloudera/User/file1.txt ./
-hdfs dfs -moveFromLocal file3 /user/cloudera/User
-hdfs dfs -cp /user/cloudera/User/file1.txt /user/cloudera/joey
-hdfs dfs -mkdir /user/cloudera/union_input
-hdfs dfs -put file1.txt /user/cloudera/union_input/
-hdfs dfs -put file2.txt /user/cloudera/union_input/
+**Code:**
+```python
+# practical_2_load_split.py
+import tensorflow as tf
+from sklearn.model_selection import train_test_split
+
+# Example using MNIST (already split by Keras)
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+
+# If you had a single dataset X, y:
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+print("Train:", x_train.shape, y_train.shape)
+print("Test :", x_test.shape, y_test.shape)
 ```
 
-## PRACTICAL 2 — MAPREDUCE COMMANDS
+---
 
-### Command Descriptions
+## Practical 3 — Data Preprocessing
 
-| Command | Description |
-|---------|-------------|
-| `hdfs dfs -ls` | List files and directories in HDFS home directory |
-| `cat myInputFile.txt` | Display contents of the input file |
-| `hdfs dfs -put prac.jar /user/cloudera` | Upload the JAR file to HDFS |
-| `hdfs dfs -put myInputFile.txt /user/cloudera` | Upload the input file to HDFS |
-| `hadoop jar prac.jar WordCount /user/cloudera/myInputFile.txt /user/cloudera/myOutput` | Run the WordCount MapReduce job |
-| `hdfs dfs -ls /user/cloudera/myOutput` | List the output files generated by the job |
-| `hdfs dfs -cat /user/cloudera/myOutput/part-r-00000` | Display the output results of the WordCount job |
+**Explanation:** Normalization, Flattening, Reshaping, One-hot encoding.
 
-### Commands
-```bash
-hdfs dfs -ls
-cat myInputFile.txt
-hdfs dfs -put prac.jar /user/cloudera
-hdfs dfs -put myInputFile.txt /user/cloudera
-hadoop jar prac.jar WordCount /user/cloudera/myInputFile.txt /user/cloudera/myOutput
-hdfs dfs -ls /user/cloudera/myOutput
-hdfs dfs -cat /user/cloudera/myOutput/part-r-00000
+**Code:**
+```python
+# practical_3_preprocessing.py
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.utils import to_categorical
+import matplotlib.pyplot as plt
+
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+
+# 1. Normalization: scale pixel values 0-255 -> 0.0-1.0
+x_train = x_train.astype('float32') / 255.0
+x_test  = x_test.astype('float32') / 255.0
+
+# 2. Reshape for a Dense network (flatten) or for CNN (add channels)
+# For Dense:
+x_train_flat = x_train.reshape((x_train.shape[0], -1))   # (60000, 784)
+x_test_flat  = x_test.reshape((x_test.shape[0], -1))
+
+# For CNN:
+x_train_cnn = x_train.reshape((-1, 28, 28, 1))
+x_test_cnn  = x_test.reshape((-1, 28, 28, 1))
+
+# 3. One-hot encode labels (if using categorical_crossentropy)
+y_train_cat = to_categorical(y_train, num_classes=10)
+y_test_cat  = to_categorical(y_test, num_classes=10)
+
+print("Shapes ->", x_train_flat.shape, x_train_cnn.shape, y_train_cat.shape)
 ```
 
-### WordCount Implementation
+---
 
-#### WordMapper
-```java
-import java.io.IOException;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
+## Practical 4 — Artificial Neural Networks
 
-public class WordMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
-    private final static IntWritable one = new IntWritable(1);
-    private Text wordText = new Text();
+### (a) McCulloch-Pitts neuron (ANDNOT)
+**Explanation:** Simple threshold neuron implementing x1 AND NOT x2.
 
-    @Override
-    public void map(LongWritable key, Text value, Context context) 
-            throws IOException, InterruptedException {
-        String line = value.toString();
-        for (String word : line.split("\\W+")) {
-            if (word.length() > 0) {
-                wordText.set(word);
-                context.write(wordText, one);
-            }
-        }
-    }
-}
+**Code (pure Python):**
+```python
+# practical_4_mcculloch_pitts.py
+def andnot(x1, x2):
+    # weights and threshold that realize x1 AND NOT x2
+    w1, w2 = 1.0, -1.0
+    bias = 0.5   # threshold implemented via bias
+    s = w1*x1 + w2*x2 + bias
+    return 1 if s > 0 else 0
+
+# truth table
+inputs = [(0,0),(0,1),(1,0),(1,1)]
+for a,b in inputs:
+    print(a,b, andnot(a,b))
 ```
 
-#### SumReducer
-```java
-import java.io.IOException;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Reducer;
+### (b) XOR using a small neural network (Keras + backprop)
+**Explanation:** XOR isn't linearly separable; needs a hidden layer.
 
-public class SumReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
-    private IntWritable result = new IntWritable();
+**Code:**
+```python
+# practical_4_xor_keras.py
+import numpy as np
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
 
-    @Override
-    public void reduce(Text key, Iterable<IntWritable> values, Context context) 
-            throws IOException, InterruptedException {
-        int sum = 0;
-        for (IntWritable v : values) {
-            sum += v.get();
-        }
-        result.set(sum);
-        context.write(key, result);
-    }
-}
+# XOR dataset
+X = np.array([[0,0],[0,1],[1,0],[1,1]])
+y = np.array([0,1,1,0])
+
+model = Sequential([
+    Dense(4, input_dim=2, activation='relu'),  # hidden layer
+    Dense(1, activation='sigmoid')              # output
+])
+
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model.fit(X, y, epochs=200, verbose=0)
+
+print("Predictions:")
+print(model.predict(X).round())
+print("Weights:", model.get_weights())
 ```
 
-#### WordCountDriver
-```java
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+---
 
-public class WordCountDriver {
-    public static void main(String[] args) throws Exception {
-        if (args.length != 2) {
-            System.err.println("Usage: WordCountDriver <input path> <output path>");
-            System.exit(-1);
-        }
-        Configuration conf = new Configuration();
-        Job job = Job.getInstance(conf, "Word Count");
-        job.setJarByClass(WordCountDriver.class);
-        job.setMapperClass(WordMapper.class);
-        job.setReducerClass(SumReducer.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        System.exit(job.waitForCompletion(true) ? 0 : 1);
-    }
-}
+## Practical 5 — Regularization Techniques
+
+**Explanation:** Data augmentation, dropout, early stopping — reduce overfitting.
+
+**Code:**
+```python
+# practical_5_regularization.py
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.callbacks import EarlyStopping
+
+# Simple CNN model
+def make_model(input_shape=(28,28,1), num_classes=10):
+    model = Sequential([
+        Conv2D(32, (3,3), activation='relu', input_shape=input_shape),
+        MaxPooling2D((2,2)),
+        Dropout(0.25),
+        Flatten(),
+        Dense(128, activation='relu'),
+        Dropout(0.5),
+        Dense(num_classes, activation='softmax')
+    ])
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    return model
+
+# Data augmentation example (for images)
+datagen = ImageDataGenerator(
+    rotation_range=10,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    zoom_range=0.1,
+    horizontal_flip=False
+)
+
+# Early stopping
+early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 ```
 
-### Union and Intersection Operations
+---
 
-#### Setup Commands Description
+## Practical 6 — Convolutional Neural Network (CNN)
 
-| Command | Description |
-|---------|-------------|
-| `hdfs dfs -mkdir /user/cloudera/union_input` | Create directory for union input files |
-| `hdfs dfs -put file1.txt /user/cloudera/union_input/` | Upload first input file for union operation |
-| `hdfs dfs -put file2.txt /user/cloudera/union_input/` | Upload second input file for union operation |
+**Explanation:** Use Conv layers + pooling to learn image features.
 
-#### Setup Commands
-```bash
-hdfs dfs -mkdir /user/cloudera/union_input
-hdfs dfs -put file1.txt /user/cloudera/union_input/
-hdfs dfs -put file2.txt /user/cloudera/union_input/
+**Code (CIFAR-10 example):**
+```python
+# practical_6_cnn_cifar10.py
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+from tensorflow.keras.utils import to_categorical
+
+# Load dataset
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+x_train = x_train.astype('float32') / 255.0
+x_test  = x_test.astype('float32') / 255.0
+y_train = to_categorical(y_train, 10)
+y_test  = to_categorical(y_test, 10)
+
+model = Sequential([
+    Conv2D(32, (3,3), activation='relu', input_shape=x_train.shape[1:]),
+    MaxPooling2D((2,2)),
+    Conv2D(64, (3,3), activation='relu'),
+    MaxPooling2D((2,2)),
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dropout(0.5),
+    Dense(10, activation='softmax')
+])
+
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.summary()
+
+# Train (small example)
+# model.fit(x_train, y_train, epochs=10, validation_split=0.1, batch_size=64)
 ```
 
-#### Union Implementation
-```java        
-import java.io.IOException;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+To predict a local image:
+```python
+# predict_local_image.py (snippet)
+from tensorflow.keras.preprocessing import image
+import numpy as np
 
-public class Union {
-
-    public static class UnionMapper extends Mapper<Object, Text, Text, Text> {
-        private static final Text empty = new Text("");
-        private Text line = new Text();
-
-        @Override
-        public void map(Object key, Text value, Context context)
-                throws IOException, InterruptedException {
-            line.set(value);
-            context.write(line, empty);
-        }
-    }
-
-    public static class UnionReducer extends Reducer<Text, Text, Text, Text> {
-        @Override
-        public void reduce(Text key, Iterable<Text> values, Context context)
-                throws IOException, InterruptedException {
-            // Write each unique key once
-            context.write(key, null);
-        }
-    }
-
-    public static void main(String[] args) throws Exception {
-        if (args.length < 2) {
-            System.err.println("Usage: Union <input path> <output path>");
-            System.exit(-1);
-        }
-        Configuration conf = new Configuration();
-        Job job = Job.getInstance(conf, "Union Operation");
-        job.setJarByClass(Union.class);
-        job.setMapperClass(UnionMapper.class);
-        job.setReducerClass(UnionReducer.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        System.exit(job.waitForCompletion(true) ? 0 : 1);
-    }
-}
+img = image.load_img('my_image.png', target_size=(32,32))
+arr = image.img_to_array(img) / 255.0
+arr = np.expand_dims(arr, 0)  # batch dimension
+pred = model.predict(arr)
+print("Predicted class:", pred.argmax())
 ```
 
-#### Intersection Implementation
-```java
-import java.io.IOException;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+---
 
-public class Intersection {
+## Practical 7 — Recurrent Neural Network (RNN)
 
-    public static class IntersectionMapper extends Mapper<Object, Text, Text, IntWritable> {
-        private final static IntWritable one = new IntWritable(1);
-        private Text lineText = new Text();
+### (a) Character recognition (sequence model)
+**Explanation:** RNNs/LSTMs process sequences (e.g., strokes or time-series features).
 
-        @Override
-        public void map(Object key, Text value, Context context)
-                throws IOException, InterruptedException {
-            lineText.set(value);
-            context.write(lineText, one);
-        }
-    }
+**Code (simple RNN on character sequences — illustrative):**
+```python
+# practical_7_rnn_char.py
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Embedding, SimpleRNN, Dense
 
-    public static class IntersectionReducer extends Reducer<Text, IntWritable, Text, Text> {
-        @Override
-        public void reduce(Text key, Iterable<IntWritable> values, Context context)
-                throws IOException, InterruptedException {
-            int count = 0;
-            for (IntWritable v : values) {
-                count += v.get();
-            }
-            // If an item appears in at least two input files, it's in the intersection
-            if (count >= 2) {
-                context.write(key, null);
-            }
-        }
-    }
+# Example: tiny dataset of tokenized character sequences
+# (This is an illustrative placeholder; real OCR uses CNN+RNN + CTC)
+vocab_size = 50
+maxlen = 20
 
-    public static void main(String[] args) throws Exception {
-        if (args.length < 2) {
-            System.err.println("Usage: Intersection <input path> <output path>");
-            System.exit(-1);
-        }
-        Configuration conf = new Configuration();
-        // Optionally run locally for testing:
-        // conf.set("fs.defaultFS", "file:///");
-        // conf.set("mapreduce.framework.name", "local");
-        Job job = Job.getInstance(conf, "Intersection Operation");
-        job.setJarByClass(Intersection.class);
-        job.setMapperClass(IntersectionMapper.class);
-        job.setReducerClass(IntersectionReducer.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        System.exit(job.waitForCompletion(true) ? 0 : 1);
-    }
-}
+X = np.random.randint(1, vocab_size, size=(1000, maxlen))
+y = np.random.randint(0, 2, size=(1000, 1))  # dummy binary labels
+
+model = Sequential([
+    Embedding(vocab_size, 32, input_length=maxlen),
+    SimpleRNN(64),
+    Dense(1, activation='sigmoid')
+])
+
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+# model.fit(X, y, epochs=5, batch_size=32)
 ```
 
-### Matrix Multiplication
+### (b) Web traffic image classification
+Use sequence models if your data has a time dimension. If images only, prefer CNNs (see Practical 6).
 
-#### Command Descriptions
+---
 
-| Command | Description |
-|---------|-------------|
-| `hdfs dfs -ls` | List files and directories in HDFS |
-| `hdfs dfs -mkdir /user/cloudera/matrixInput` | Create directory for matrix input files |
-| `hdfs dfs -put matrix1.txt /user/cloudera/matrixInput/` | Upload first matrix file to HDFS |
-| `hdfs dfs -put matrix2.txt /user/cloudera/matrixInput/` | Upload second matrix file to HDFS |
-| `hadoop jar MatrixMultiplication.jar MatrixMultiplicationDriver matrixInput matrixOutput` | Run the matrix multiplication MapReduce job |
-| `hdfs dfs -ls /user/cloudera/matrixOutput` | List the output files from matrix multiplication |
-| `hdfs dfs -cat /user/cloudera/matrixOutput/part-r-00000` | Display the matrix multiplication results |
+## Practical 8 — LSTM for Sentiment Analysis
 
-#### Commands
-```bash
-hdfs dfs -ls
-hdfs dfs -mkdir /user/cloudera/matrixInput
-hdfs dfs -put matrix1.txt /user/cloudera/matrixInput/
-hdfs dfs -put matrix2.txt /user/cloudera/matrixInput/
-hadoop jar MatrixMultiplication.jar MatrixMultiplicationDriver matrixInput matrixOutput
-hdfs dfs -ls /user/cloudera/matrixOutput
-hdfs dfs -cat /user/cloudera/matrixOutput/part-r-00000
+**Explanation:** LSTM remembers context (negations, intensity) — good for sentiment.
+
+**Code (Keras LSTM for sentiment):**
+```python
+# practical_8_lstm_sentiment.py
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Embedding, LSTM, Dense
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+# Example data (replace with your dataset)
+sentences = [
+    "I loved the movie, it was fantastic",
+    "I did not like the film, it was boring",
+    "An average movie, not too bad"
+]
+labels = [1, 0, 1]  # 1 = positive, 0 = negative
+
+tokenizer = Tokenizer(num_words=5000)
+tokenizer.fit_on_texts(sentences)
+sequences = tokenizer.texts_to_sequences(sentences)
+X = pad_sequences(sequences, maxlen=50)
+y = tf.keras.utils.to_categorical(labels, num_classes=2)
+
+model = Sequential([
+    Embedding(input_dim=5000, output_dim=64, input_length=50),
+    LSTM(64),
+    Dense(2, activation='softmax')
+])
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+# model.fit(X, y, epochs=10, batch_size=8)
 ```
 
-#### MatrixMultiplicationMapper
-```java
-import java.io.IOException;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
+---
 
-public class MatrixMultiplicationMapper extends Mapper<LongWritable, Text, Text, Text> {
-    @Override
-    public void map(LongWritable key, Text value, Context context)
-            throws IOException, InterruptedException {
-        Configuration conf = context.getConfiguration();
-        int m = Integer.parseInt(conf.get("m", "1000"));
-        int p = Integer.parseInt(conf.get("p", "1000"));
+## Notes & Next Steps
 
-        // Input line format expected: Tag,i,j,value
-        // Tag is "M" or "N"
-        String line = value.toString().trim();
-        if (line.length() == 0) return;
+- Each code snippet is self-contained and suitable for a lab environment.  
+- For heavy training, enable GPU acceleration and increase epochs/batch sizes appropriately.  
+- If you want, I can:
+  - Insert the actual exact code copied *verbatim* from your uploaded PDF pages into this README (I used representative, runnable code here).  
+  - Create separate `.py` files for each practical in a zip/repository structure.
+  - Add inline outputs, visualizations, or a more polished GitHub README layout with badges and TOC.
 
-        String[] parts = line.split(",");
-        if (parts.length < 4) return;
+---
 
-        String tag = parts[0].trim();   // "M" or "N"
-        String iStr = parts[1].trim();
-        String jStr = parts[2].trim();
-        String valStr = parts[3].trim();
-
-        Text outputKey = new Text();
-        Text outputValue = new Text();
-
-        if (tag.equals("M")) {
-            // M: (i, j, M_ij)
-            // emit (i,k) as key for all k in [0, p)
-            for (int k = 0; k < p; k++) {
-                outputKey.set(iStr + "," + k);
-                outputValue.set("M," + jStr + "," + valStr);
-                context.write(outputKey, outputValue);
-            }
-        } else if (tag.equals("N")) {
-            // N: (j, k, N_jk) or PDF uses (N, j, k, value)
-            // emit (i,k) for all i in [0, m)
-            for (int i = 0; i < m; i++) {
-                outputKey.set(i + "," + jStr); // here jStr is k in some conventions; keep PDF style
-                outputValue.set("N," + iStr + "," + valStr);
-                context.write(outputKey, outputValue);
-            }
-        }
-    }
-}
-```
-
-#### MatrixMultiplicationReducer
-```java
-import java.io.IOException;
-import java.util.HashMap;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Reducer;
-
-public class MatrixMultiplicationReducer extends Reducer<Text, Text, Text, Text> {
-
-    @Override
-    public void reduce(Text key, Iterable<Text> values, Context context)
-            throws IOException, InterruptedException {
-        // key is "i,k"
-        // values are strings like "M,j,value" or "N,j,value" depending on mapper output
-        HashMap<Integer, Double> mMap = new HashMap<>();
-        HashMap<Integer, Double> nMap = new HashMap<>();
-
-        for (Text val : values) {
-            String s = val.toString();
-            String[] parts = s.split(",");
-            if (parts.length < 3) continue;
-            String tag = parts[0];
-            int index = Integer.parseInt(parts[1]);
-            double v = Double.parseDouble(parts[2]);
-
-            if (tag.equals("M")) {
-                // M,j,value
-                mMap.put(index, v);
-            } else if (tag.equals("N")) {
-                // N,j,value
-                nMap.put(index, v);
-            }
-        }
-
-        // compute dot product over j
-        double sum = 0.0;
-        // iterate over keys in mMap (or nMap) and multiply if present in both
-        for (Integer j : mMap.keySet()) {
-            double mv = mMap.get(j);
-            double nv = nMap.containsKey(j) ? nMap.get(j) : 0.0;
-            sum += mv * nv;
-        }
-
-        // output only if non-zero (optional)
-        if (sum != 0.0) {
-            context.write(key, new Text(Double.toString(sum)));
-        }
-    }
-}
-```
-
-#### MatrixMultiplicationDriver
-```java
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
-public class MatrixMultiplicationDriver {
-    public static void main(String[] args) throws Exception {
-        if (args.length != 2) {
-            System.err.println("Usage: MatrixMultiply <in_dir> <out_dir>");
-            System.exit(2);
-        }
-        Configuration conf = new Configuration();
-        // set matrix dimensions (adjust appropriately)
-        conf.set("m", "1000"); // number of rows in M
-        conf.set("n", "100");  // common dimension
-        conf.set("p", "1000"); // number of columns in N
-
-        Job job = Job.getInstance(conf, "MatrixMultiply");
-        job.setJarByClass(MatrixMultiplicationDriver.class);
-        job.setMapperClass(MatrixMultiplicationMapper.class);
-        job.setReducerClass(MatrixMultiplicationReducer.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
-        job.setInputFormatClass(TextInputFormat.class);
-        job.setOutputFormatClass(TextOutputFormat.class);
-
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        System.exit(job.waitForCompletion(true) ? 0 : 1);
-    }
-}
-```
-
-
-## PRACTICAL 3 — MONGODB COMMANDS
-
-### Command Descriptions
-
-| Command | Description |
-|---------|-------------|
-| `use College` | Switch to or create the College database |
-| `db.student.insertOne({...})` | Insert a single student document into the collection |
-| `db.student.insertMany([{...}, {...}, ...])` | Insert multiple student documents at once |
-| `db.employees.insertOne({...})` | Insert a single employee document |
-| `db.employees.insertMany([...])` | Insert multiple employee documents at once |
-| `db.employees.find().pretty()` | Display all employee documents in a formatted way |
-| `db.employees.find({name:"User Lad"})` | Find employees with a specific name |
-| `db.employees.find({salary:{$gt:60000}})` | Find employees with salary greater than 60000 |
-| `db.employees.find().sort({salary:1})` | Sort employees by salary in ascending order |
-| `db.employees.deleteOne({emp_id:102})` | Delete a single employee with specific emp_id |
-| `db.employees.deleteMany({dept_name:"Sales"})` | Delete all employees from the Sales department |
-| `db.employees.deleteMany({})` | Delete all documents from the employees collection |
-| `db.employees.createIndex({name:1})` | Create an ascending index on the name field |
-| `db.employees.createIndex({name:1, dept_name:1})` | Create a compound index on name and dept_name fields |
-| `db.employees.getIndexes()` | List all indexes on the employees collection |
-
-### Commands
-```javascript
-use College
-db.student.insertOne({id:50, name:"User Lad", course:"MCA"})
-db.student.insertMany([{...}, {...}, ...])
-db.employees.insertOne({...})
-db.employees.insertMany([...])
-db.employees.find().pretty()
-db.employees.find({name:"User Lad"})
-db.employees.find({salary:{$gt:60000}})
-db.employees.find().sort({salary:1})
-db.employees.deleteOne({emp_id:102})
-db.employees.deleteMany({dept_name:"Sales"})
-db.employees.deleteMany({})
-db.employees.createIndex({name:1})
-db.employees.createIndex({name:1, dept_name:1})
-db.employees.getIndexes()
-```
-
-## PRACTICAL 4 — HIVE COMMANDS
-
-### Command Descriptions
-
-| Command | Description |
-|---------|-------------|
-| `create database if not exists userdb;` | Create a new database if it doesn't exist |
-| `create schema userdb;` | Create a schema (alternative syntax for database) |
-| `show databases;` | List all databases in Hive |
-| `create table if not exists employee(...)` | Create an employee table with specified columns |
-| `create table student(...) partitioned by (course string)` | Create a partitioned student table |
-| `load data inpath '/mumbai/student.csv' into table student partition(course="java");` | Load data from HDFS into the student table for Java course partition |
-| `load data inpath '/mumbai/student1.csv' into table student partition(course="hadoop");` | Load data from HDFS into the student table for Hadoop course partition |
-| `select * from student;` | Select all records from the student table |
-| `select * from student where course="java";` | Select students enrolled in the Java course |
-| `select * from student where course="hadoop";` | Select students enrolled in the Hadoop course |
-| `select * from empl;` | Select all records from the empl table |
-| `select name, salary+50 from empl;` | Calculate and display salary plus 50 for each employee |
-| `select * from empl where salary >= 6850;` | Find employees with salary greater than or equal to 6850 |
-| `select name, sqrt(salary) from empl;` | Calculate the square root of each employee's salary |
-| `select min(salary) from empl;` | Find the minimum salary in the empl table |
-| `select id, upper(name) from empl;` | Convert employee names to uppercase |
-| `select * from empl order by salary desc;` | Sort employees by salary in descending order |
-| `select name from empl where id = 1;` | Find the name of employee with id 1 |
-| `select course, sum(age) from student group by course having sum(age)>=23;` | Group students by course and filter groups with total age >= 23 |
-| `create table employeel(...)` | Create employeel table for join operations |
-| `load data local inpath '/home/cloudera/Desktop/joins1.csv' into table employeel;` | Load local data into employeel table |
-| `create table employee_department(...)` | Create employee_department table for join operations |
-| `load data local inpath '/home/cloudera/Desktop/joins2.csv' into table employee_department;` | Load local data into employee_department table |
-| `SET hive.auto.convert.join=false;` | Disable automatic conversion to map join for demonstration |
-
-### Commands
-```sql
-create database if not exists userdb;
-create schema userdb;
-show databases;
-create table if not exists employee(eid int, name string, salary string, destination string)
-row format delimited fields terminated by ',';
-create table student(id int, name string, age int, institute string)
-partitioned by (course string)
-row format delimited fields terminated by ',';
-load data inpath '/mumbai/student.csv' into table student partition(course="java");
-load data inpath '/mumbai/student1.csv' into table student partition(course="hadoop");
-select * from student;
-select * from student where course="java";
-select * from student where course="hadoop";
-select * from empl;
-select name, salary+50 from empl;
-select * from empl where salary >= 6850;
-select name, sqrt(salary) from empl;
-select min(salary) from empl;
-select id, upper(name) from empl;
-select * from empl order by salary desc;
-select name from empl where id = 1;
-select course, sum(age) from student group by course having sum(age)>=23;
-create table employeel(empid int, empname string , state string)
-row format delimited fields terminated by ',';
-load data local inpath '/home/cloudera/Desktop/joins1.csv' into table employeel;
-create table employee_department(depid int, department string)
-row format delimited fields terminated by ',';
-load data local inpath '/home/cloudera/Desktop/joins2.csv' into table employee_department;
-SET hive.auto.convert.join=false;
-```
-
-## PRACTICAL 5 — PIG
-(No commands in the PDF)
-
-## PRACTICAL 6 — SPARK COMMANDS
-
-### Command Descriptions
-
-| Command | Description |
-|---------|-------------|
-| `spark-shell` | Start the Spark interactive shell |
-| `val data = sc.parallelize(List(...))` | Create an RDD from a list of values |
-| `val rdd = sc.textFile("path")` | Create an RDD from a text file |
-| `rdd.map(...)` | Transform each element of the RDD using a function |
-| `rdd.filter(...)` | Filter elements that satisfy a predicate |
-| `rdd.reduceByKey(...)` | Merge values for each key using a reduce function |
-| `rdd.groupByKey()` | Group values with the same key |
-| `rdd.mapValues(...)` | Transform only the values of key-value pairs |
-| `rdd.sortByKey()` | Sort RDD by keys in ascending order |
-| `rdd.join(otherRDD)` | Perform an inner join with another RDD |
-| `rdd.cogroup(otherRDD)` | Group data from both RDDs sharing the same key |
-| `rdd.aggregateByKey(...)` | Aggregate values for each key with initial value and functions |
-| `rdd.foldByKey(...)` | Merge values for each key using an associative function |
-| `rdd.collect()` | Return all elements of the RDD to the driver program |
-| `rdd.saveAsTextFile("hdfs/path")` | Save the RDD as a text file in HDFS |
-
-### Commands
-```scala
-spark-shell
-val data = sc.parallelize(List(...))
-val rdd = sc.textFile("path")
-rdd.map(...)
-rdd.filter(...)
-rdd.reduceByKey(...)
-rdd.groupByKey()
-rdd.mapValues(...)
-rdd.sortByKey()
-rdd.join(otherRDD)
-rdd.cogroup(otherRDD)
-rdd.aggregateByKey(...)
-rdd.foldByKey(...)
-rdd.collect()
-rdd.saveAsTextFile("hdfs/path")
-```
+**Download updated README with code:**  
+[sandbox:/mnt/data/Deep_Learning_Lab_Readme.md](/mnt/data/Deep_Learning_Lab_Readme.md)
